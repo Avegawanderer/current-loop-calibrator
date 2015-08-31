@@ -164,7 +164,7 @@ void LCD_Init(void) {
     LCD_SetCursorPosition(0,1); 
     LCD_PutString("  петли 4-20мА");
     LCD_SetCursorPosition(0,3); 
-    LCD_PutString("Версия 1.1");
+    LCD_PutString("Версия 1.2");
 }
 
 void LCD_Clear(void) {

@@ -84,7 +84,13 @@ int main(void) {
 	system_settings_ok = EE_RestoreSystemSettings((device_mode == MODE_CALIBRATION));
 	if (system_settings_ok) {
 		// Apply system settings:
-		DAC_ApplyCalibration();
+        if (device_mode != MODE_CALIBRATION)
+        {
+            // Do not calibrate DAC - use raw output
+            // This allows re-calibration when previous was incorrect
+            DAC_ApplyCalibration();
+        }
+        // Raw ADC codes are used for calibration - safe to apply wrong calibration
 		ADC_LC_ApplyCalibration();
         ADC_LV_ApplyCalibration();
 		ExtADC_ApplyCalibration();

@@ -6,6 +6,7 @@
 #define LCD_CONTRAST_MIN    0
 #define LCD_CONTRAST_MAX    20
 
+#define LCD_MAX_PWM_ARR_STEP    20
 
 void LCD_InitContrastBooster(void);
 void LCD_ProcessContrastBooster(void);

@@ -31,18 +31,21 @@ void PowerMonitor_Init(void) {
     PORT_InitTypeDef PORT_InitStructure;
     
     COMP_StructInit(&COMP_InitStructure);
-    COMP_InitStructure.COMP_PlusInputSource = COMP_PlusInput_CVREF;  
-    COMP_InitStructure.COMP_MinusInputSource = COMP_MinusInput_IN1;
+    //COMP_InitStructure.COMP_PlusInputSource = COMP_PlusInput_CVREF;  
+    COMP_InitStructure.COMP_PlusInputSource = COMP_PlusInput_IN1;  
+    //COMP_InitStructure.COMP_MinusInputSource = COMP_MinusInput_IN1;
+    COMP_InitStructure.COMP_MinusInputSource = COMP_MinusInput_IVREF;   // 1.2V
+    COMP_InitStructure.COMP_OutInversion = COMP_OUT_INV_Enable;
     COMP_Init(&COMP_InitStructure);
     
-    COMP_CVRefStructInit(&COMP_CVRefInitStructure);
-    COMP_CVRefInitStructure.COMP_CVRefSource = COMP_CVREF_SOURCE_AVdd;
-    COMP_CVRefInitStructure.COMP_CVRefRange = COMP_CVREF_RANGE_Up;
-    COMP_CVRefInitStructure.COMP_CVRefScale = COMP_CVREF_SCALE_14_div_32;
-    COMP_CVRefInit(&COMP_CVRefInitStructure);
+    //COMP_CVRefStructInit(&COMP_CVRefInitStructure);
+    //COMP_CVRefInitStructure.COMP_CVRefSource = COMP_CVREF_SOURCE_AVdd;
+    //COMP_CVRefInitStructure.COMP_CVRefRange = COMP_CVREF_RANGE_Up;
+    //COMP_CVRefInitStructure.COMP_CVRefScale = COMP_CVREF_SCALE_14_div_32;
+    //COMP_CVRefInit(&COMP_CVRefInitStructure);
     
     COMP_Cmd(ENABLE); 
-    COMP_CVRefCmd(ENABLE);    
+    //COMP_CVRefCmd(ENABLE);    
     while(COMP_GetCfgFlagStatus(COMP_CFG_FLAG_READY) != SET);
     
     // Setup GPIO

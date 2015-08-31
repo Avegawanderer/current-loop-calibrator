@@ -78,25 +78,36 @@ void LCD_ProcessContrastBooster(void) {
 	uint16_t temp16u;
     int32_t temp32;
 	uint8_t next_state = contrastBoosterState + 1;
+    static uint16_t arr_value = 1000;
     switch (contrastBoosterState) {
         case 0:
             ADC_Contrast_Start();
             break;
         case 1:
             temp16u = ADC_Contrast_GetResult();
-            temp16u = 4096 - temp16u;
-            // -3.3V -> 0x0000, 3.3V -> 0x0FFF
-            temp32 = contrastAdcCode - temp16u;
-            if (temp32 < 0) {
-                MDR_TIMER2->CCR3 = 0;   // Overshoot. Disable PWM
-            } else {
-                temp32 *= 10;           // k in proportional regulation law
-                temp32 = 2000 - temp32; // Maximum period. Period varies from this value to min
-                if (temp32 < 50)        // max freq = 20kHz
-                    temp32 = 50;
-                MDR_TIMER2->ARR = temp32;
-                MDR_TIMER2->CCR3 = MDR_TIMER2->ARR >> 1;
-            }
+            // -3.3V -> 0, 3.3V -> 4095
+            temp16u = 4095 - temp16u;
+            // -3.3V -> 4095, 3.3V -> 0
+            // contrastAdcCode = setting [1000 - 3000]
+            // Get difference
+            temp32 = - (int32_t)contrastAdcCode + (int32_t)temp16u;
+            // Bound step
+            if (temp32 > LCD_MAX_PWM_ARR_STEP)
+                temp32 = LCD_MAX_PWM_ARR_STEP;
+            else if (temp32 < -LCD_MAX_PWM_ARR_STEP)
+                temp32 = -LCD_MAX_PWM_ARR_STEP;
+        
+            // Integrate error
+            arr_value += temp32;
+
+            // Bound frequency
+            if (arr_value < 50)
+                arr_value = 50;
+            else if (arr_value > 2000)
+                arr_value = 2000;
+        
+            MDR_TIMER2->ARR = arr_value;
+            MDR_TIMER2->CCR3 = MDR_TIMER2->ARR >> 1;
 			next_state = 0;
             break;
 		default:
